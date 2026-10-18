@@ -5,7 +5,14 @@ class Database
 
     public function __construct()
     {
-        $ruta = __DIR__ . '/../database/paralelogramo.sqlite';
+        $directorio = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'database';
+        if (!is_dir($directorio)
+            && !mkdir($directorio, 0775, true)
+            && !is_dir($directorio)) {
+            throw new RuntimeException('No se pudo crear el directorio de la base de datos.');
+        }
+
+        $ruta = $directorio . DIRECTORY_SEPARATOR . 'paralelogramo.sqlite';
         $this->pdo = new PDO('sqlite:' . $ruta, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
