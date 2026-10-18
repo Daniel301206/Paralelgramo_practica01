@@ -44,10 +44,14 @@ class ParalelogramoController
 
     private function guardarOActualizar(int $idUsuario): string
     {
-        $idEnviado = $_POST['id_paralelogramo'] ?? 0;
-        $id = is_string($idEnviado) || is_int($idEnviado)
-            ? filter_var($idEnviado, FILTER_VALIDATE_INT)
-            : false;
+        $idEnviado = $_POST['id_paralelogramo'] ?? '';
+        if ($idEnviado === '' || $idEnviado === 0 || $idEnviado === '0') {
+            $id = 0;
+        } else {
+            $id = is_string($idEnviado) || is_int($idEnviado)
+                ? filter_var($idEnviado, FILTER_VALIDATE_INT)
+                : false;
+        }
         $detalle = $_POST['txtDetalle'] ?? '';
         $base = $this->leerMedida('txtBase');
         $lado = $this->leerMedida('txtLado');
@@ -71,19 +75,29 @@ class ParalelogramoController
 
         $detalle = trim($detalle);
         if ($id > 0) {
-            $actualizado = $this->modelo->actualizar(
-                $id,
-                $idUsuario,
-                $detalle,
-                $base,
-                $lado,
-                $altura
-            );
+            try {
+                $actualizado = $this->modelo->actualizar(
+                    $id,
+                    $idUsuario,
+                    $detalle,
+                    $base,
+                    $lado,
+                    $altura
+                );
+            } catch (PDOException $e) {
+                error_log('Error SQLite al actualizar cálculo, SQLSTATE ' . $e->getCode() . '.');
+                return 'No se pudo actualizar el cálculo por un error de base de datos.';
+            }
 
             return $actualizado ? 'Registro actualizado.' : 'No se encontró el registro para actualizar.';
         }
 
-        $this->modelo->guardar($idUsuario, $detalle, $base, $lado, $altura);
+        try {
+            $this->modelo->guardar($idUsuario, $detalle, $base, $lado, $altura);
+        } catch (PDOException $e) {
+            error_log('Error SQLite al guardar cálculo, SQLSTATE ' . $e->getCode() . '.');
+            return 'No se pudo guardar el cálculo por un error de base de datos.';
+        }
 
         return 'Cálculo guardado.';
     }

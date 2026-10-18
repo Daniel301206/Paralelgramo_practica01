@@ -11,7 +11,7 @@ $mensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mensaje = $controller->procesarFormulario($idUsuario);
     if (in_array($mensaje, ['Cálculo guardado.', 'Registro actualizado.', 'Registro eliminado.'], true)) {
-        header('Location: home.php?mensaje=' . rawurlencode($mensaje));
+        header('Location: /views/home.php?mensaje=' . rawurlencode($mensaje));
         exit;
     }
 }
@@ -70,17 +70,17 @@ $esc = static function ($valor): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Calculadora de área y perímetro de un paralelogramo con historial SQLite.">
     <title>Calculadora de paralelogramo</title>
-    <link rel="stylesheet" href="../assets/css/style_home.css">
+    <link rel="stylesheet" href="/assets/css/style_home.css">
 </head>
 <body>
     <header class="site-header">
-        <a class="brand" href="home.php">
-            <img src="../Imagenes/Paralelogramo%20azul%20con%20%C3%A1ngulos%20marcados.png" alt="">
+        <a class="brand" href="/" aria-label="Volver a la bienvenida">
+            <img src="/Imagenes/Paralelogramo%20azul%20con%20%C3%A1ngulos%20marcados.png" alt="">
             <span>Geometría fácil</span>
         </a>
         <div class="header-user">
             <span>Hola, <?= $esc($_SESSION['usuario'] ?? 'Usuario') ?></span>
-            <a class="button button-secondary" href="logout.php">Cerrar sesión</a>
+            <a class="button button-secondary" href="/views/logout.php">Cerrar sesión</a>
         </div>
     </header>
 
@@ -102,7 +102,7 @@ $esc = static function ($valor): string {
                     <h2 id="form-title">Medidas del paralelogramo</h2>
                 </div>
             </div>
-            <form action="home.php" method="post" id="frmFormulario">
+            <form action="/views/home.php" method="post" id="frmFormulario">
                 <input type="hidden" name="id_paralelogramo" value="<?= $esc($idActual) ?>">
                 <div class="form-grid">
                     <label>
@@ -143,7 +143,7 @@ $esc = static function ($valor): string {
                         <?= $idActual !== '' ? 'Actualizar cálculo' : 'Guardar cálculo' ?>
                     </button>
                     <?php if ($idActual !== '') : ?>
-                        <a class="button button-secondary" href="home.php">Cancelar edición</a>
+                        <a class="button button-secondary" href="/views/home.php">Cancelar edición</a>
                     <?php endif; ?>
                 </div>
             </form>
@@ -155,13 +155,13 @@ $esc = static function ($valor): string {
                     <p class="eyebrow">Tus resultados</p>
                     <h2 id="history-title">Historial de cálculos</h2>
                 </div>
-                <form class="search-form" action="home.php" method="get">
+                <form class="search-form" action="/views/home.php" method="get">
                     <label class="visually-hidden" for="txtBuscar">Buscar en el historial</label>
                     <input type="search" name="buscar" id="txtBuscar" placeholder="Buscar medidas o detalle"
                            value="<?= $esc($buscar) ?>">
                     <button class="button button-secondary" type="submit">Buscar</button>
                     <?php if ($buscar !== '') : ?>
-                        <a class="clear-link" href="home.php">Limpiar</a>
+                        <a class="clear-link" href="/views/home.php">Limpiar</a>
                     <?php endif; ?>
                 </form>
             </div>
@@ -192,8 +192,8 @@ $esc = static function ($valor): string {
                                     <td><?= $esc($fila['perimetro']) ?></td>
                                     <td><?= $esc($fila['detalle']) ?></td>
                                     <td class="row-actions">
-                                        <a class="action-link" href="home.php?editar=<?= (int) $fila['id_paralelogramo'] ?>">Editar</a>
-                                        <form action="home.php" method="post"
+                                        <a class="action-link" href="/views/home.php?editar=<?= (int) $fila['id_paralelogramo'] ?>">Editar</a>
+                                        <form action="/views/home.php" method="post"
                                               onsubmit="return confirm('¿Deseas eliminar este cálculo?');">
                                             <input type="hidden" name="id_paralelogramo"
                                                    value="<?= (int) $fila['id_paralelogramo'] ?>">
@@ -213,6 +213,6 @@ $esc = static function ($valor): string {
             </div>
         </section>
     </main>
-    <script src="../assets/js/app.js"></script>
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

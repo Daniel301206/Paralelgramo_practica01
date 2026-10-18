@@ -46,19 +46,5 @@ class Database
             )'
         );
 
-        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM usuario WHERE correo = :correo');
-        $stmt->execute(['correo' => 'admin@paralelogramo.local']);
-
-        if ((int) $stmt->fetchColumn() === 0) {
-            $insertar = $this->pdo->prepare(
-                'INSERT OR IGNORE INTO usuario (nombre, correo, clave)
-                 VALUES (:nombre, :correo, :clave)'
-            );
-            $insertar->execute([
-                'nombre' => 'Administrador',
-                'correo' => 'admin@paralelogramo.local',
-                'clave' => password_hash('admin123', PASSWORD_DEFAULT),
-            ]);
-        }
     }
 }
