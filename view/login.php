@@ -2,64 +2,66 @@
 session_start();
 require_once __DIR__ . '/../controller/AuthController.php';
 
+if (!empty($_SESSION['id_usuario'])) {
+    header('Location: home.php');
+    exit;
+}
+
 $mensaje = '';
-
+$correo = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $correo = trim($_POST['correo'] ?? '');
-    $clave = trim($_POST['clave'] ?? '');
+    $correo = $_POST['correo'] ?? '';
+    $clave = $_POST['clave'] ?? '';
 
-    if ($correo === '' || $clave === '') {
-        $mensaje = 'Complete todos los campos';
+    if (!is_string($correo) || !is_string($clave) || trim($correo) === '' || $clave === '') {
+        $mensaje = 'Completa el correo y la contraseña.';
     } else {
-        $auth = new AuthController();
+        $correo = trim($correo);
+        if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+            $mensaje = 'Ingresa un correo válido.';
+        } else {
+            $auth = new AuthController();
+            if ($auth->login($correo, $clave)) {
+                header('Location: home.php');
+                exit;
+            }
 
-        if ($auth->login($correo, $clave)) {
-            header('Location: home.php');
-            exit;
+            $mensaje = 'El correo o la contraseña son incorrectos.';
         }
-
-        $mensaje = 'Correo o clave incorrectos';
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="index,follow">
-    <meta name="description" content="Calculo del area y perimetro del cuadrado">
-    <meta name="keywords" content="cuadrado, sistema, base de datos">
-    <meta name="author" content="BC TECH">
-
-    <link rel="icon" href="../imagenes/icono.png">
-    <link rel="stylesheet" href="../assetes/css/style.css">
-
-    <title>Cuadrado</title>
+    <meta name="description" content="Inicia sesión en la calculadora de paralelogramo.">
+    <title>Iniciar sesión | Geometría fácil</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body>
-    <header>
+<body class="login-page">
+    <main class="login-card">
+        <img class="login-illustration"
+             src="../Imagenes/Paralelogramo%20azul%20con%20%C3%A1ngulos%20marcados.png"
+             alt="Ilustración de un paralelogramo">
+        <p class="eyebrow">Geometría fácil</p>
+        <h1>Calculadora de paralelogramo</h1>
+        <p class="login-copy">Inicia sesión para calcular y guardar tus resultados.</p>
 
-    </header>
-    <main>
-        <div class="caja">
-            <form action="" method="post" id="frmLogin">
-                <img src="../imagenes/logo.png" alt="logo onstituciones">
-                <input type="email" name="correo" id="correo" placeholder="Correo">
-                <input type="password" name="clave" id="clave" placeholder="Clave">
-                <button type="submit" id="btnIngresar">Ingesar</button>
-            </form>
-            <?php  if(!empty($usuario)) :  ?>
-                <script>
-                    alert("<?php echo htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>");
-                </script>
-            <?php   endif; ?>
-        </div>
+        <?php if ($mensaje !== '') : ?>
+            <p class="login-error" role="alert"><?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8') ?></p>
+        <?php endif; ?>
+
+        <form action="login.php" method="post">
+            <label for="correo">Correo</label>
+            <input type="email" name="correo" id="correo" autocomplete="username"
+                   value="<?= htmlspecialchars(is_string($correo) ? $correo : '', ENT_QUOTES, 'UTF-8') ?>" required>
+            <label for="clave">Contraseña</label>
+            <input type="password" name="clave" id="clave" autocomplete="current-password" required>
+            <button class="button" type="submit">Iniciar sesión</button>
+        </form>
+        <p class="login-help">Acceso inicial: <strong>admin@paralelogramo.local</strong> / <strong>admin123</strong></p>
     </main>
-    <footer>
-
-    </footer>
-    <script src="../assetes/js/app.js"></script>
 </body>
 </html>

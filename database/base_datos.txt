@@ -1,0 +1,16 @@
+Base de datos SQLite del proyecto
+=================================
+
+La aplicación crea automáticamente database/paralelogramo.sqlite y las tablas
+usuario y paralelogramo al iniciar una sesión. La cuenta inicial de demostración:
+
+Correo: admin@paralelogramo.local
+Contraseña: admin123
+
+Para que el inicio automático funcione, PHP debe tener habilitado PDO_SQLITE y
+el servidor web debe poder escribir dentro de esta carpeta. No hace falta
+instalar ni iniciar un servidor MySQL.
+
+Cada registro conserva base, lado, altura, área (base * altura), perímetro
+(2 * (base + lado)), detalle opcional y fecha de registro. Los registros están
+asociados al usuario que los creó.
